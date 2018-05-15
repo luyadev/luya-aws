@@ -26,14 +26,29 @@ use Aws\S3\S3Client;
  */
 class S3FileSystem extends BaseFileSystemStorage
 {
+    /**
+     * @var string Contains the name of the bucket defined on amazon webservice.
+     */
     public $bucket;
+    
+    /**
+     * @var string The authentiication key in order to connect to the s3 bucket.
+     */
     public $key;
+    
+    /**
+     * @var string The authentification secret in order to connect to the s3 bucket.
+     */
     public $secret;
+    
     /**
      * @var string Regions overview: https://docs.aws.amazon.com/general/latest/gr/rande.html
      */
     public $region;
     
+    /**
+     * @var string The ACL default permission when writing new files.
+     */
     public $acl = 'public-read';
     
     /**
@@ -133,7 +148,7 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemReplaceFile($fileName, $newSource)
     {
-        
+        // put object should auto override the file based on the key (whcih is $filename) 
     }
     
     /**
@@ -141,6 +156,6 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemDeleteFile($fileName)
     {
-        
+        // remove
     }
 }
