@@ -131,7 +131,7 @@ class S3FileSystem extends BaseFileSystemStorage
     /**
      * @inheritdoc
      */
-    public function fileSystemReplaceFile($oldSource, $newSource)
+    public function fileSystemReplaceFile($fileName, $newSource)
     {
         
     }
@@ -139,7 +139,7 @@ class S3FileSystem extends BaseFileSystemStorage
     /**
      * @inheritdoc
      */
-    public function fileSystemDeleteFile($source)
+    public function fileSystemDeleteFile($fileName)
     {
         
     }
