@@ -29,6 +29,9 @@ class S3FileSystem extends BaseFileSystemStorage
     public $bucket;
     public $key;
     public $secret;
+    /**
+     * @var string Regions overview: https://docs.aws.amazon.com/general/latest/gr/rande.html
+     */
     public $region;
     
     public $acl = 'public-read';
@@ -62,44 +65,56 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
-     * Get the base path to the storage directory.
-     *
-     * @return string Get the relative http path to the storage folder if nothing is provided by the setter method `setHttpPath()`.
+     * @inheritdoc
      */
-    public function getHttpPath()
+    public function fileHttpPath($fileName)
     {
-        return "https://{$this->bucket}.s3-{$this->region}.amazonaws.com";
+        return $this->getClient()->getObjectUrl($this->bucket, $fileName);
     }
     
     /**
-     * Get the base absolute base path to the storage directory.
-     *
-     * @return string Get the absolute http path to the storage folder if nothing is provided by the setter method `setAbsoluteHttpPath()`.
+     * @inheritdoc
      */
-    public function getAbsoluteHttpPath()
+    public function fileAbsoluteHttpPath($fileName)
     {
-        return $this->getHttpPath();   
+        return $this->fileHttpPath($fileName);   
     }
     
     /**
-     * Get the internal server path to the storage folder.
-     *
-     * Default path is `@webroot/storage`.
-     *
-     * @return string Get the path on the server to the storage folder based @webroot alias.
+     * @inheritdoc
      */
-    public function getServerPath()
+    public function fileServerPath($fileName)
     {
-        return $this->getHttpPath();   
+        return $this->fileHttpPath($fileName);
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function fileSystemContent($fileName)
+    {
+        $object = $this->fileSystemExists($fileName);
+        
+        if ($object) {
+            return $object['Body'];
+        }
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function fileSystemExists($fileName)
+    {
+        try {
+            return $this->getClient()->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
+        } catch (\Aws\S3\Exception\S3Exception $e) {
+            return false;
+        }
     }
     
     
     /**
-     * Save the given file source as a new file with the given fileName on the filesystem.
-     *
-     * @param string $source The absolute file source path and filename, like `/tmp/upload/myfile.jpg`.
-     * @param string $fileName The new of the file on the file system like `MyNewFile.jpg`.
-     * @return boolean Whether the file has been stored or not.
+     * @inheritdoc
      */
     public function fileSystemSaveFile($source, $fileName)
     {
@@ -114,11 +129,7 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
-     * Replace an existing file source with a new one on the filesystem.
-     *
-     * @param string $oldSource The absolute file source path and filename, like `/tmp/upload/myfile.jpg`.
-     * @param string $newSource The absolute file source path and filename, like `/tmp/upload/myfile.jpg`.
-     * @return boolean Whether the file has replaced stored or not.
+     * @inheritdoc
      */
     public function fileSystemReplaceFile($oldSource, $newSource)
     {
@@ -126,9 +137,7 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
-     * Delete a given file source on the filesystem.
-     * @param string $source The absolute file source path and filename, like `/tmp/upload/myfile.jpg`.
-     * @return boolean Whether the file has been deleted or not.
+     * @inheritdoc
      */
     public function fileSystemDeleteFile($source)
     {

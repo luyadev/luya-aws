@@ -10,8 +10,10 @@
         "luyadev/luya-testsuite": "~1.0.0"
     },
     "autoload": {
-        "luya\\amazons3\\" : "src/",
-        "luya\\amazons3\\tests\\" : "tests/"
+        "psr-4" : {
+            "luya\\amazons3\\" : "src/",
+            "luya\\amazons3\\tests\\" : "tests/"
+        }
     },
     "license": "MIT",
     "authors": [
