@@ -45,6 +45,8 @@ class S3FileSystem extends BaseFileSystemStorage
         }
     }
     
+    private $_client;
+    
     /**
      * Get the Amazon client library.
      *
