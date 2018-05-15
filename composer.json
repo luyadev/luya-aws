@@ -1,0 +1,23 @@
+{
+    "name": "luyadev/luya-filesystem-amazons3",
+    "description": "LUYA Filesystem layer for amazon S3 Buckets.",
+    "type": "luya-extension",
+    "require": {
+        "luyadev/luya-module-admin": "~1.1.0",
+        "aws/aws-sdk-php": "^3.0"
+    },
+    "require-dev": {
+        "luyadev/luya-testsuite": "~1.0.0"
+    },
+    "autoload": {
+        "luya\\amazons3\\" : "src/",
+        "luya\\amazons3\\tests\\" : "tests/"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Basil Suter",
+            "email": "git@nadar.io"
+        }
+    ]
+}
