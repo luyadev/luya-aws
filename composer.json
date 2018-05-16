@@ -1,6 +1,6 @@
 {
-    "name": "luyadev/luya-filesystem-amazons3",
-    "description": "LUYA Filesystem layer for amazon S3 Buckets.",
+    "name": "luyadev/luya-aws",
+    "description": "LUYA Amazon Webservice LUYA components.",
     "type": "luya-extension",
     "require": {
         "luyadev/luya-module-admin": "~1.1.0",
