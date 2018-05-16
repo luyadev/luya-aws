@@ -13,7 +13,7 @@ use Aws\S3\S3Client;
  * 
  * ```php
  * 'storage' => [
- *     'class' => 'luya\amazons3\S3FileSystem',
+ *     'class' => 'luya\aws\S3FileSystem',
  *     'bucket' => 'BUCKET_NAME',
  *     'key' => 'KEY',
  *     'secret' => 'SECRET',
