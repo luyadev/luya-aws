@@ -11,8 +11,8 @@
     },
     "autoload": {
         "psr-4" : {
-            "luya\\amazons3\\" : "src/",
-            "luya\\amazons3\\tests\\" : "tests/"
+            "luya\\aws\\" : "src/",
+            "luya\\aws\\tests\\" : "tests/"
         }
     },
     "license": "MIT",

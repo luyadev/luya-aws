@@ -5,8 +5,8 @@
 # LUYA Amazon S3 filesystem
 
 [![LUYA](https://img.shields.io/badge/Powered%20by-LUYA-brightgreen.svg)](https://luya.io)
-[![Latest Stable Version](https://poser.pugx.org/luyadev/luya-filesystem-amazons3/v/stable)](https://packagist.org/packages/luyadev/luya-filesystem-amazons3)
-[![Total Downloads](https://poser.pugx.org/luyadev/luya-filesystem-amazons3/downloads)](https://packagist.org/packages/luyadev/luya-filesystem-amazons3)
+[![Latest Stable Version](https://poser.pugx.org/luyadev/luya-aws/v/stable)](https://packagist.org/packages/luyadev/luya-aws)
+[![Total Downloads](https://poser.pugx.org/luyadev/luya-aws/downloads)](https://packagist.org/packages/luyadev/luya-aws)
 [![Slack Support](https://img.shields.io/badge/Slack-luyadev-yellowgreen.svg)](https://slack.luya.io/)
 
 A file system for the LUYA admin interface in order to store and retrieve all storage data from an Amazon S3 Bucket.
@@ -16,7 +16,7 @@ A file system for the LUYA admin interface in order to store and retrieve all st
 For the installation of the filesystem composer is required.
 
 ```sh
-composer require luyadev/luya-filesystem-amazons3:~1.0.0
+composer require luyadev/luya-aws:~1.0.0
 ```
 
 ### Configuration 
@@ -26,7 +26,7 @@ After installation via Composer include the storage component to your configurat
 ```php
 'components' => [
     'storage' => [
-        'class' => 'luya\amazons3\S3FileSystem',
+        'class' => 'luya\aws\S3FileSystem',
         'bucket' => 'BUCKET_NAME',
         'key' => 'KEY',
         'secret' => 'SECRET',

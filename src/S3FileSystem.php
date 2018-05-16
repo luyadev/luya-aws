@@ -1,6 +1,6 @@
 <?php
 
-namespace luya\amazons3;
+namespace luya\aws;
 
 use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
@@ -20,6 +20,8 @@ use Aws\S3\S3Client;
  *     'region' => 'eu-central-1',
  * ]
  * ```
+ * 
+ * @property \Aws\S3\S3Client $client The AWS SDK S3 Client.
  * 
  * @author Basil Suter <basil@nadar.io>
  * @since 1.0.0
@@ -121,7 +123,7 @@ class S3FileSystem extends BaseFileSystemStorage
     public function fileSystemExists($fileName)
     {
         try {
-            return $this->getClient()->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
+            return $this->client->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
         } catch (\Aws\S3\Exception\S3Exception $e) {
             return false;
         }
@@ -140,7 +142,7 @@ class S3FileSystem extends BaseFileSystemStorage
             'SourceFile' => $source,
         ];
         
-        return $this->getClient()->putObject($config);
+        return $this->client->putObject($config);
     }
     
     /**
@@ -148,7 +150,7 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemReplaceFile($fileName, $newSource)
     {
-        // put object should auto override the file based on the key (whcih is $filename) 
+        return $this->fileSystemSaveFile($newSource, $fileName);
     }
     
     /**
@@ -156,6 +158,6 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemDeleteFile($fileName)
     {
-        // remove
+        return (bool) $this->client->deleteObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
     }
 }
