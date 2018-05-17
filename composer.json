@@ -6,7 +6,8 @@
         "aws/aws-sdk-php": "^3.0"
     },
     "require-dev": {
-        "luyadev/luya-testsuite": "~1.0.0"
+        "luyadev/luya-testsuite": "~1.0.0",
+        "luyadev/luya-module-admin": "~1.2"
     },
     "autoload": {
         "psr-4" : {
