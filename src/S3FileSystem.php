@@ -5,12 +5,13 @@ namespace luya\aws;
 use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
+use Yii;
 
 /**
  * Amazon S3 Bucket Filesystem.
- * 
+ *
  * Use Amazon S3 Bucket for LUYA Admin Filesystem:
- * 
+ *
  * ```php
  * 'storage' => [
  *     'class' => 'luya\aws\S3FileSystem',
@@ -20,9 +21,9 @@ use Aws\S3\S3Client;
  *     'region' => 'eu-central-1',
  * ]
  * ```
- * 
+ *
  * @property \Aws\S3\S3Client $client The AWS SDK S3 Client.
- * 
+ *
  * @author Basil Suter <basil@nadar.io>
  * @since 1.0.0
  */
@@ -81,12 +82,19 @@ class S3FileSystem extends BaseFileSystemStorage
         return $this->_client;
     }
     
+    private $_httpPaths = [];
+    
     /**
      * @inheritdoc
      */
     public function fileHttpPath($fileName)
     {
-        return $this->getClient()->getObjectUrl($this->bucket, $fileName);
+        if (!isset($this->_httpPaths[$fileName])) {
+            Yii::debug('Get S3 object url: ' . $fileName, __METHOD__);
+            $this->_httpPaths[$fileName] = $this->getClient()->getObjectUrl($this->bucket, $fileName);
+        }
+        
+        return $this->_httpPaths[$fileName];
     }
     
     /**
@@ -94,7 +102,7 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileAbsoluteHttpPath($fileName)
     {
-        return $this->fileHttpPath($fileName);   
+        return $this->fileHttpPath($fileName);
     }
     
     /**
@@ -110,11 +118,17 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemContent($fileName)
     {
-        $object = $this->fileSystemExists($fileName);
-        
-        if ($object) {
-            return $object['Body'];
+        try {
+            $object = $this->client->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
+            
+            if ($object) {
+                return $object['Body'];
+            }
+        } catch (\Aws\S3\Exception\S3Exception $e) {
+            return false;
         }
+        
+        return false;
     }
     
     /**
@@ -122,11 +136,7 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemExists($fileName)
     {
-        try {
-            return $this->client->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
-        } catch (\Aws\S3\Exception\S3Exception $e) {
-            return false;
-        }
+        return !empty($this->fileHttpPath($fileName));
     }
     
     
