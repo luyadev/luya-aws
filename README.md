@@ -16,7 +16,7 @@ A file system for the LUYA admin interface in order to store and retrieve all st
 For the installation of the filesystem composer is required.
 
 ```sh
-composer require luyadev/luya-aws:~1.0.0
+composer require luyadev/luya-aws
 ```
 
 ### Configuration 
