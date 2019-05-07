@@ -2,10 +2,11 @@
 
 namespace luya\aws;
 
+use Yii;
 use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
-use Yii;
+use Aws\S3\Exception\S3Exception;
 
 /**
  * Amazon S3 Bucket Filesystem.
@@ -76,7 +77,13 @@ class S3FileSystem extends BaseFileSystemStorage
     public function getClient()
     {
         if ($this->_client === null) {
-            $this->_client = new S3Client(['version' => 'latest', 'region' => $this->region, 'credentials' => ['key' => $this->key, 'secret' => $this->secret]]);
+            $this->_client = new S3Client([
+                'version' => 'latest',
+                'region' => $this->region,
+                'credentials' => [
+                    'key' => $this->key,
+                    'secret' => $this->secret,
+                ]]);
         }
         
         return $this->_client;
@@ -119,12 +126,15 @@ class S3FileSystem extends BaseFileSystemStorage
     public function fileSystemContent($fileName)
     {
         try {
-            $object = $this->client->getObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
+            $object = $this->client->getObject([
+                'Bucket' => $this->bucket,
+                'Key' => $fileName,
+            ]);
             
             if ($object) {
                 return $object['Body'];
             }
-        } catch (\Aws\S3\Exception\S3Exception $e) {
+        } catch (S3Exception $e) {
             return false;
         }
         
@@ -138,7 +148,6 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return !empty($this->fileHttpPath($fileName));
     }
-    
     
     /**
      * @inheritdoc
@@ -168,6 +177,9 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemDeleteFile($fileName)
     {
-        return (bool) $this->client->deleteObject(['Bucket' => $this->bucket, 'Key' => $fileName]);
+        return (bool) $this->client->deleteObject([
+            'Bucket' => $this->bucket,
+            'Key' => $fileName,
+        ]);
     }
 }
