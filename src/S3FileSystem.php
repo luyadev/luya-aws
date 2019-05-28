@@ -146,7 +146,7 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function fileSystemExists($fileName)
     {
-        return !empty($this->fileHttpPath($fileName));
+        return $this->client->doesObjectExist($this->bucket, $fileName);
     }
     
     /**
