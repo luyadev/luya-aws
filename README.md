@@ -5,6 +5,7 @@
 # LUYA Amazon S3 filesystem
 
 [![LUYA](https://img.shields.io/badge/Powered%20by-LUYA-brightgreen.svg)](https://luya.io)
+![Tests](https://github.com/luyadev/luya-aws/workflows/Tests/badge.svg)
 [![Latest Stable Version](https://poser.pugx.org/luyadev/luya-aws/v/stable)](https://packagist.org/packages/luyadev/luya-aws)
 [![Total Downloads](https://poser.pugx.org/luyadev/luya-aws/downloads)](https://packagist.org/packages/luyadev/luya-aws)
 [![Slack Support](https://img.shields.io/badge/Slack-luyadev-yellowgreen.svg)](https://slack.luya.io/)
