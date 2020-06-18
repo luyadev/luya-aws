@@ -5,7 +5,7 @@ In order to read more about upgrading and BC breaks have a look at the [UPGRADE 
 
 ## 1.1.0
 
-+ []() Ensure Minio Server compatibility, therfore introduce `endpoint` and `usePathStyleEndpoint` config option.
++ [#5](https://github.com/luyadev/luya-aws/pull/5) Ensure Minio Server compatibility, therfore introduce `endpoint` and `usePathStyleEndpoint` config option.
 
 ## 1.0.2 (28. May 2019)
 
