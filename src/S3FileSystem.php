@@ -57,11 +57,13 @@ class S3FileSystem extends BaseFileSystemStorage
 
     /**
      * @var boolean If defined the s3 config `use_path_style_endpoint` will recieve this value. This should be set to true when working with minio storage.
+     * @since 1.1.0
      */
     public $usePathStyleEndpoint;
 
     /**
      * @var string If defined the s3 config `endpoint` will recieve this value. Example `http://localhost:9000` for minio usage
+     * @since 1.1.0
      */
     public $endpoint;
     
