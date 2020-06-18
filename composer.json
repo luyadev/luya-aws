@@ -11,7 +11,12 @@
     },
     "autoload": {
         "psr-4" : {
-            "luya\\aws\\" : "src/",
+            "luya\\aws\\" : "src/"
+            
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "luya\\aws\\tests\\" : "tests/"
         }
     },

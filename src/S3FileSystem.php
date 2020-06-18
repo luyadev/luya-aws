@@ -54,6 +54,18 @@ class S3FileSystem extends BaseFileSystemStorage
      * @var string The ACL default permission when writing new files.
      */
     public $acl = 'public-read';
+
+    /**
+     * @var boolean If defined the s3 config `use_path_style_endpoint` will recieve this value. This should be set to true when working with minio storage.
+     * @since 1.1.0
+     */
+    public $usePathStyleEndpoint;
+
+    /**
+     * @var string If defined the s3 config `endpoint` will recieve this value. Example `http://localhost:9000` for minio usage
+     * @since 1.1.0
+     */
+    public $endpoint;
     
     /**
      * @inheritdoc
@@ -77,16 +89,38 @@ class S3FileSystem extends BaseFileSystemStorage
     public function getClient()
     {
         if ($this->_client === null) {
-            $this->_client = new S3Client([
-                'version' => 'latest',
-                'region' => $this->region,
-                'credentials' => [
-                    'key' => $this->key,
-                    'secret' => $this->secret,
-                ]]);
+            $this->_client = new S3Client($this->getS3Config());
         }
         
         return $this->_client;
+    }
+
+    /**
+     * Returns the S3 Client Config Array
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getS3Config()
+    {
+        $config = [
+            'version' => 'latest',
+            'region' => $this->region,
+            'credentials' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+            ]
+        ];
+
+        if ($this->usePathStyleEndpoint !== null) {
+            $config['use_path_style_endpoint'] = $this->usePathStyleEndpoint;
+        };
+
+        if ($this->endpoint !== null) {
+            $config['endpoint'] = $this->endpoint;
+        }
+
+        return $config;
     }
     
     private $_httpPaths = [];
