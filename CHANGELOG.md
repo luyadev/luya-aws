@@ -5,7 +5,7 @@ In order to read more about upgrading and BC breaks have a look at the [UPGRADE 
 
 ## 1.2.0 (27. August 2020)
 
-+ [#6](https://github.com/luyadev/luya-aws/pull/6) Add new option to update bucked policy, add command to update policy, add helper method with policies as JSON.
++ [#6](https://github.com/luyadev/luya-aws/pull/6) Add new option to update bucket policy, add command to update policy, add helper method with policies as JSON.
 
 ## 1.1.0 (18. June 2020)
 
