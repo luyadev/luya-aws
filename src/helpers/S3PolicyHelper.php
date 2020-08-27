@@ -2,52 +2,18 @@
 
 namespace luya\aws\helpers;
 
+/**
+ * S3 Policy Helper
+ * 
+ * @author Basil Suter <git@nadar.io>
+ * @since 1.2.0
+ */
 class S3PolicyHelper
 {
-    /*   
-    public static function readOnlyPolicy()
-    {
-        return '{
-            "Version": "2012-10-17",
-            "Statement": [
-              {
-                "Action": [
-                  "s3:GetBucketLocation",
-                  "s3:ListBucket"
-                ],
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": [
-                    "*"
-                  ]
-                },
-                "Resource": [
-                  "arn:aws:s3:::{{bucket}}"
-                ],
-                "Sid": ""
-              },
-              {
-                "Action": [
-                  "s3:GetObject"
-                ],
-                "Effect": "Allow",
-                "Principal": {
-                  "AWS": [
-                    "*"
-                  ]
-                },
-                "Resource": [
-                  "arn:aws:s3:::{{bucket}}/*"
-                ],
-                "Sid": ""
-              }
-            ]
-        }';
-    }
-    */
-    public static function publicReadPolicy()
-    {
-      return '{
+    const S3_POLICY_PUBLIC_READ = 's3PolicyPublicRead';
+
+    public static $policies = [
+      self::S3_POLICY_PUBLIC_READ => '{
         "Version": "2012-10-17",
         "Statement": [
           {
@@ -66,6 +32,6 @@ class S3PolicyHelper
             "Sid": ""
           }
         ]
-      }';
-    }
+      }',
+    ];
 }
