@@ -85,6 +85,7 @@ class PackageTestCase extends WebApplicationTestCase
         ]);
 
         $this->assertContains('foobar.txt?', $s3->presignedUrl('foobar.txt', '10 min'));
+        $this->assertContains('/bucket/foobar.txt', $s3->fileHttpPath('foobar.txt'));
     }
 
     public function testUpdateBucket()
