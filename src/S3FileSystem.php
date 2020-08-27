@@ -2,11 +2,13 @@
 
 namespace luya\aws;
 
+use Aws\Result;
 use Yii;
 use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use luya\helpers\StringHelper;
 
 /**
  * Amazon S3 Bucket Filesystem.
@@ -136,6 +138,45 @@ class S3FileSystem extends BaseFileSystemStorage
         }
         
         return $this->_httpPaths[$fileName];
+    }
+    
+    /**
+     * Generate a presigned download url for a private object f.e
+     *
+     * @param string $fileName The filename
+     * @param string $time An example for 10 minutes would be `+10 minutes`
+     * @return string
+     * @since 1.2.0
+     */
+    public function presignedUrl($fileName, $time)
+    {
+        // Get a command object from the client
+        $command = $this->getClient()->getCommand('GetObject', [
+            'Bucket' => $this->bucket,
+            'Key'    => $fileName
+        ]);
+
+        // Create a pre-signed URL for a request with duration of 10 miniutes
+        $presignedRequest = $this->getClient()->createPresignedRequest($command, $time);
+
+        // Get the actual presigned-url
+        return (string) $presignedRequest->getUri();
+    }
+
+    /**
+     * Update Bucket Policy
+     *
+     * @param string $policy
+     * @return Result
+     * @since 1.2.0
+     */
+    public function updateBucketPolicy($policy)
+    {
+        // Configure the policy
+        return $this->getClient()->putBucketPolicy([
+            'Bucket' => $this->bucket,
+            'Policy' => StringHelper::template($policy, ['bucket' => $this->bucket]),
+        ]);
     }
     
     /**

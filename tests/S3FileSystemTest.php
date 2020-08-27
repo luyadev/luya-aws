@@ -2,11 +2,13 @@
 
 namespace luya\aws\test;
 
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use luya\aws\helpers\S3PolicyHelper;
 use luya\aws\S3FileSystem;
 use luya\testsuite\cases\WebApplicationTestCase;
 
-class PackageTestCase extends WebApplicationTestCase
+class S3FileSystemTest extends WebApplicationTestCase
 {
     public function getConfigArray()
     {
@@ -69,5 +71,35 @@ class PackageTestCase extends WebApplicationTestCase
         ]);
 
         $this->assertInstanceOf(S3Client::class, $s3->getClient());
+    }
+
+    public function testPresignedUrl()
+    {
+        $s3 = new S3FileSystem($this->app->request, [
+            'bucket' => 'bucket',
+            'key' => 'key',
+            'secret' => 'secret',
+            'region' => 'region',
+            'usePathStyleEndpoint' => true,
+            'endpoint' => 'https://localhost:9000',
+        ]);
+
+        $this->assertContains('foobar.txt?', $s3->presignedUrl('foobar.txt', '10 min'));
+        $this->assertContains('/bucket/foobar.txt', $s3->fileHttpPath('foobar.txt'));
+    }
+
+    public function testUpdateBucket()
+    {
+        $s3 = new S3FileSystem($this->app->request, [
+            'bucket' => 'bucket',
+            'key' => 'key',
+            'secret' => 'secret',
+            'region' => 'region',
+            'usePathStyleEndpoint' => true,
+            'endpoint' => 'https://localhost:9000',
+        ]);
+
+        $this->expectException(S3Exception::class);
+        $s3->updateBucketPolicy(S3PolicyHelper::S3_POLICY_PUBLIC_READ);
     }
 }
