@@ -8,7 +8,7 @@ use luya\aws\helpers\S3PolicyHelper;
 use luya\aws\S3FileSystem;
 use luya\testsuite\cases\WebApplicationTestCase;
 
-class PackageTestCase extends WebApplicationTestCase
+class S3FileSystemTest extends WebApplicationTestCase
 {
     public function getConfigArray()
     {

@@ -28,6 +28,14 @@ class S3Command extends Command
 {
     public $storage = 'storage';
 
+    /**
+     * Change the bucket policy.
+     * 
+     * Example `s3/apply-policy s3PolicyPublicRead`
+     *
+     * @param string $policyName
+     * @return void
+     */
     public function actionApplyPolicy($policyName)
     {
         return Yii::$app->get($this->storage)->updateBucketPolicy(S3PolicyHelper::$policies[$policyName]);
