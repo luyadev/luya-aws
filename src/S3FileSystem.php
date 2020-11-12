@@ -8,6 +8,7 @@ use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\Transfer;
 use luya\helpers\StringHelper;
 
 /**
@@ -177,6 +178,37 @@ class S3FileSystem extends BaseFileSystemStorage
             'Bucket' => $this->bucket,
             'Policy' => StringHelper::template($policy, ['bucket' => $this->bucket]),
         ]);
+    }
+    
+    /**
+     * Create a folder
+     * 
+     * To check if a folder exists use `fileSystemExists`.
+     *
+     * @param string $folder
+     * @return boolean
+     */
+    public function folderCreate($folder)
+    {
+        $this->client->putObject(array( 
+            'ACL' => $this->acl,
+            'Bucket' => $this->bucket,
+            'Key'    => rtrim($folder, '/') . '/',
+            'Body'   => "",
+        ));
+    }
+
+    /**
+     * Transfer folder to s3
+     *
+     * @param string $source `/path/to/source/files`
+     * @param string $dest `/` would be root but `/foo` would be root folder and then subfolder foo.
+     */
+    public function folderTransfer($source, $dest)
+    {
+        $manager = new Transfer($this->getClient(), $source, 's3://'.$this->bucket.'/'.ltrim($dest, '/'));
+
+        $manager->transfer();
     }
     
     /**
