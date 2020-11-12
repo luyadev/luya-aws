@@ -4,6 +4,7 @@ namespace luya\aws;
 
 use luya\web\AssetManager as WebAssetManager;
 use Yii;
+use yii\base\Component;
 
 /**
  * 
@@ -11,12 +12,19 @@ use Yii;
  */
 class AssetManager extends WebAssetManager
 {
-    public $basePath = 'assets';
+    /**
+     * All assets will be stored using this path inside the bucket, for root storage use null
+     *
+     * @var string
+     */
+    public $basePath = 'assets'; // TODO does only work by accident... https://forum.yiiframework.com/t/publish-assetmanager-files-to-cdn/130920
 
-    public $baseUrl = 'https://cdn.luya.io';
+    public function init()
+    {
+
+    }
 
     //'basePath' => './',
-    //'baseUrl' => '//cdn.host.com',
 
     /**
      * Publish a given file with its directory 
@@ -33,7 +41,7 @@ class AssetManager extends WebAssetManager
         }
 
         // the path and the URL that the asset is published as.
-        return [$dstFile, $this->baseUrl . $dstDir];
+        return [$dstFile, Yii::$app->storage->fileHttpPath($dstFile)];
     }
 
     /**
@@ -48,12 +56,13 @@ class AssetManager extends WebAssetManager
         $dir = $this->hash($src);
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
 
-        if (!Yii::$app->storage->fileSystemExists($dstDir)) {
+        $forceCopy = $this->forceCopy && (isset($options['forceCopy']) && $options['forceCopy']);
+
+        if ($forceCopy || !Yii::$app->storage->fileSystemFolderExists($dstDir)) {
             Yii::$app->storage->folderTransfer($src, $dstDir);
         }
 
         // the path directory and the URL that the asset is published as.
-        return [$dstDir, $this->baseUrl . '/' . $dir];
+        return [$dstDir, Yii::$app->storage->fileHttpPath($dstDir)];
     }
-
 }

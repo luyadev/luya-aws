@@ -249,6 +249,39 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
+     * Seee
+     * 
+     * @see https://github.com/thephpleague/flysystem-aws-s3-v3/blob/master/src/AwsS3Adapter.php
+     * @param [type] $folderPath
+     * @return void
+     */
+    public function fileSystemFolderExists($folderPath)
+    {
+        // Maybe this isn't an actual key, but a prefix.
+        // Do a prefix listing of objects to determine.
+        $command = $this->client->getCommand(
+            'listObjects',
+            [
+                'Bucket'  => $this->bucket,
+                'Prefix'  => rtrim($folderPath, '/') . '/',
+                'MaxKeys' => 1,
+            ]
+        );
+
+        try {
+            $result = $this->client->execute($command);
+
+            return $result['Contents'] || $result['CommonPrefixes'];
+        } catch (S3Exception $e) {
+            if (in_array($e->getStatusCode(), [403, 404], true)) {
+                return false;
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     public function fileSystemExists($fileName)
