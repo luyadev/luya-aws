@@ -7,7 +7,13 @@ use Yii;
 use yii\base\Component;
 
 /**
+ * Usage
  * 
+ * ```php
+ * 'assetManager' => [
+ *     'class' => 'luya\aws\AssetManager',
+ * ],
+ * ```
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  */
 class AssetManager extends WebAssetManager
