@@ -2,6 +2,7 @@
 
 namespace luya\aws;
 
+use luya\traits\CacheableTrait;
 use luya\web\AssetManager as WebAssetManager;
 use Yii;
 use yii\base\Component;
@@ -14,10 +15,15 @@ use yii\base\Component;
  *     'class' => 'luya\aws\AssetManager',
  * ],
  * ```
+ * 
+ * > WOFF/FONT needs a valid cors request to be loaded from remote!
+ *  
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  */
 class AssetManager extends WebAssetManager
 {
+    use CacheableTrait;
+
     /**
      * All assets will be stored using this path inside the bucket, for root storage use null
      *
@@ -42,12 +48,16 @@ class AssetManager extends WebAssetManager
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
         $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName; // assets/<hash>/jquery.js
 
-        if (!Yii::$app->storage->fileSystemExists($dstFile)) {
+        if ($cached = $this->isCached($this->forceCopy, $dstFile)) {
+            return $cached;
+        }
+
+        if ($this->forceCopy || !Yii::$app->storage->fileSystemExists($dstFile)) {
             Yii::$app->storage->fileSystemSaveFile($src, $dstFile);
         }
 
         // the path and the URL that the asset is published as.
-        return [$dstFile, Yii::$app->storage->fileHttpPath($dstFile)];
+        return $this->setCached($this->forceCopy, $dstFile, Yii::$app->storage->fileHttpPath($dstFile));
     }
 
     /**
@@ -64,11 +74,53 @@ class AssetManager extends WebAssetManager
 
         $forceCopy = $this->forceCopy && (isset($options['forceCopy']) && $options['forceCopy']);
 
+        if ($cached = $this->isCached($forceCopy, $dstDir)) {
+            return $cached;
+        }
+
         if ($forceCopy || !Yii::$app->storage->fileSystemFolderExists($dstDir)) {
             Yii::$app->storage->folderTransfer($src, $dstDir);
         }
 
-        // the path directory and the URL that the asset is published as.
-        return [$dstDir, Yii::$app->storage->fileHttpPath($dstDir)];
+        return $this->setCached($forceCopy, $dstDir, Yii::$app->storage->fileHttpPath($dstDir));
+    }
+
+    /**
+     * Check if a cacheable value exists and is valid.
+     *
+     * @param boolean $forceCopy
+     * @param string $dst
+     * @return boolean|array
+     */
+    private function isCached($forceCopy, $dst)
+    {
+        if ($forceCopy) {
+            return false;
+        }
+
+        $cacheValue = $this->getHasCache(['assetManager', $dst]);
+
+        if (!$cacheValue) {
+            return false;
+        }
+
+        return [$dst, $cacheValue];
+    }
+
+    /**
+     * Set the values into cache if allowed and return expected format
+     *
+     * @param boolean $forceCopy
+     * @param string $dst
+     * @param string $cdnPath
+     * @return array
+     */
+    private function setCached($forceCopy, $dst, $cdnPath)
+    {
+        if (!$forceCopy) {
+            $this->setHasCache(['assetManager', $dst], $cdnPath, null, 0);
+        }
+
+        return [$dst, $cdnPath];
     }
 }
