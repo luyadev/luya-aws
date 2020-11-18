@@ -8,6 +8,9 @@ use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use luya\admin\events\FileEvent;
+use luya\admin\Module;
+use luya\helpers\FileHelper;
 use luya\helpers\StringHelper;
 
 /**
@@ -79,6 +82,23 @@ class S3FileSystem extends BaseFileSystemStorage
         if ($this->region === null || $this->bucket === null || $this->key === null) {
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
+
+        $this->on(self::FILE_UPDATE_EVENT, function(FileEvent $event) {
+            // update the disposition
+
+            /*
+            // setup your $s3 connection, and define the bucket and key for your resource.
+            $s3->copyObject(array(
+            'Bucket' => $bucket,
+            'CopySource' => "$bucket/$key",
+            'Key' => $key,
+            'Metadata' => array(
+                'ExtraHeader' => 'HEADER VALUE'
+            ),
+            'MetadataDirective' => 'REPLACE'
+            ));
+*/
+        });
     }
     
     private $_client;
@@ -234,7 +254,14 @@ class S3FileSystem extends BaseFileSystemStorage
             'Bucket' => $this->bucket,
             'Key' => $fileName,
             'SourceFile' => $source,
+            'ContentType' => FileHelper::getMimeType($source),
         ];
+
+        if (!Module::getInstance()->fileDefaultInlineDisposition) {
+            $config['ContentDisposition'] = 'attachement'; // inline is default setting
+        } else {
+            // inline; filename="$fileName"
+        }
         
         return $this->client->putObject($config);
     }
