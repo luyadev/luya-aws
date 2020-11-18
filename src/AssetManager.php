@@ -17,6 +17,29 @@ use yii\base\Component;
  * ```
  * 
  * > WOFF/FONT needs a valid cors request to be loaded from remote!
+ * 
+ * CORS Policy:
+ * 
+ * ```json
+ * [
+ *   {
+ *       "AllowedHeaders": [
+ *           "*"
+ *       ],
+ *       "AllowedMethods": [
+ *           "GET",
+ *           "POST"
+ *       ],
+ *       "AllowedOrigins": [
+ *           "http://luyaenvdev-web-luya-env-dev.dev.zephir.ch",
+ *           "*",
+ *           "localhost"
+ *       ],
+ *       "ExposeHeaders": [],
+ *       "MaxAgeSeconds": 3000
+ *   }
+ * ]
+ * ```
  *  
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  */
