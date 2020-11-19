@@ -56,7 +56,7 @@ class S3FileSystem extends BaseFileSystemStorage
     public $region;
     
     /**
-     * @var string The ACL default permission when writing new files.
+     * @var string The ACL default permission when writing new files. All available options are `private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control`
      */
     public $acl = 'public-read';
 
@@ -84,20 +84,23 @@ class S3FileSystem extends BaseFileSystemStorage
         }
 
         $this->on(self::FILE_UPDATE_EVENT, function(FileEvent $event) {
-            // update the disposition
+            // Copy the object in order to not upload the content again
+            $config = [
+                'Bucket' => $this->bucket,
+                'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
+                'Key' => $event->file->name_new_compound,
+                'MetadataDirective' => 'REPLACE',
+                'ContentType' => $event->file->mime_type,
+            ];
 
-            /*
-            // setup your $s3 connection, and define the bucket and key for your resource.
-            $s3->copyObject(array(
-            'Bucket' => $bucket,
-            'CopySource' => "$bucket/$key",
-            'Key' => $key,
-            'Metadata' => array(
-                'ExtraHeader' => 'HEADER VALUE'
-            ),
-            'MetadataDirective' => 'REPLACE'
-            ));
-*/
+            if ($event->file->inline_disposition) {
+                // keep ContentDisposition because this is the default value for s3 objects
+                // therefore ensure its not provided in the config.
+            } else {
+                $config['ContentDisposition'] = 'attachement'; // inline is default setting
+            }
+
+            return $this->client->copyObject($config);
         });
     }
     
@@ -259,10 +262,9 @@ class S3FileSystem extends BaseFileSystemStorage
 
         if (!Module::getInstance()->fileDefaultInlineDisposition) {
             $config['ContentDisposition'] = 'attachement'; // inline is default setting
-        } else {
-            // inline; filename="$fileName"
         }
         
+        // see https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#putobject
         return $this->client->putObject($config);
     }
     
