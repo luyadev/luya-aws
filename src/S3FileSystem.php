@@ -8,6 +8,9 @@ use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use luya\admin\events\FileEvent;
+use luya\admin\Module;
+use luya\helpers\FileHelper;
 use luya\helpers\StringHelper;
 
 /**
@@ -53,7 +56,7 @@ class S3FileSystem extends BaseFileSystemStorage
     public $region;
     
     /**
-     * @var string The ACL default permission when writing new files.
+     * @var string The ACL default permission when writing new files. All available options are `private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control`
      */
     public $acl = 'public-read';
 
@@ -79,6 +82,26 @@ class S3FileSystem extends BaseFileSystemStorage
         if ($this->region === null || $this->bucket === null || $this->key === null) {
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
+
+        $this->on(self::FILE_UPDATE_EVENT, function(FileEvent $event) {
+            // Copy the object in order to not upload the content again
+            $config = [
+                'Bucket' => $this->bucket,
+                'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
+                'Key' => $event->file->name_new_compound,
+                'MetadataDirective' => 'REPLACE',
+                'ContentType' => $event->file->mime_type,
+            ];
+
+            if ($event->file->inline_disposition) {
+                // keep ContentDisposition because this is the default value for s3 objects
+                // therefore ensure its not provided in the config.
+            } else {
+                $config['ContentDisposition'] = 'attachement'; // inline is default setting
+            }
+
+            return $this->client->copyObject($config);
+        });
     }
     
     private $_client;
@@ -234,8 +257,14 @@ class S3FileSystem extends BaseFileSystemStorage
             'Bucket' => $this->bucket,
             'Key' => $fileName,
             'SourceFile' => $source,
+            'ContentType' => FileHelper::getMimeType($source),
         ];
+
+        if (!Module::getInstance()->fileDefaultInlineDisposition) {
+            $config['ContentDisposition'] = 'attachement'; // inline is default setting
+        }
         
+        // see https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#putobject
         return $this->client->putObject($config);
     }
     
