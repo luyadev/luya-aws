@@ -40,7 +40,14 @@ use yii\base\Component;
  *   }
  * ]
  * ```
- *  
+ * 
+ * Compared to the original AssetManger the following behavior changed:
+ * 
+ * + linkAssets: This option has no effect!
+ * + dirMode: has no effect
+ * + fileMode: has no effect
+ * + beforeCopy: has no effect 
+ * 
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  */
 class AssetManager extends WebAssetManager
@@ -95,7 +102,7 @@ class AssetManager extends WebAssetManager
         $dir = $this->hash($src);
         $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
 
-        $forceCopy = $this->forceCopy && (isset($options['forceCopy']) && $options['forceCopy']);
+        $forceCopy = $this->forceCopy || (isset($options['forceCopy']) && $options['forceCopy']);
 
         if ($cached = $this->isCached($forceCopy, $dstDir)) {
             return $cached;
