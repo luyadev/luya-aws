@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
+## 1.2.1 (19. November 2020)
+
++ [#10](https://github.com/luyadev/luya-aws/pull/10) Fix issue where content type was not provided correctly, also ensure the disposition is set correctly when uploading or updating and object.
+
 ## 1.2.0 (27. August 2020)
 
 + [#6](https://github.com/luyadev/luya-aws/pull/6) Add new option to update bucket policy, add command to update policy, add helper method with policies as JSON.
