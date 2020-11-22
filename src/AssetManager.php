@@ -41,12 +41,13 @@ use yii\base\Component;
  * ]
  * ```
  * 
- * Compared to the original AssetManger the following behavior changed:
+ * Compared to the original AssetManger the following properties has no effect!
  * 
- * + linkAssets: This option has no effect!
- * + dirMode: has no effect
- * + fileMode: has no effect
- * + beforeCopy: has no effect 
+ * + hashCallback
+ * + linkAssets
+ * + dirMode
+ * + fileMode
+ * + beforeCopy
  * 
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  */
@@ -63,7 +64,9 @@ class AssetManager extends WebAssetManager
 
     public function init()
     {
-
+        $this->hashCallback = function($path) {
+            return sprintf('%x', crc32($path . Yii::getVersion() . '|' . Yii::$app->packageInstaller->timestamp));
+        };
     }
 
     //'basePath' => './',
