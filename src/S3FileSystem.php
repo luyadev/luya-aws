@@ -89,25 +89,33 @@ class S3FileSystem extends BaseFileSystemStorage
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
 
-        $this->on(self::FILE_UPDATE_EVENT, function(FileEvent $event) {
-            // Copy the object in order to not upload the content again
-            $config = [
-                'Bucket' => $this->bucket,
-                'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
-                'Key' => $event->file->name_new_compound,
-                'MetadataDirective' => 'REPLACE',
-                'ContentType' => $event->file->mime_type,
-            ];
+        $this->on(self::FILE_UPDATE_EVENT, [$this, 'fileUpdateEvent']);
+    }
+    
+    /**
+     * Update/Replace the online file
+     *
+     * @param FileEvent $event
+     */
+    public function fileUpdateEvent(FileEvent $event)
+    {
+        // Copy the object in order to not upload the content again
+        $config = [
+            'Bucket' => $this->bucket,
+            'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
+            'Key' => $event->file->name_new_compound,
+            'MetadataDirective' => 'REPLACE',
+            'ContentType' => $event->file->mime_type,
+        ];
 
-            if ($event->file->inline_disposition) {
-                // keep ContentDisposition because this is the default value for s3 objects
-                // therefore ensure its not provided in the config.
-            } else {
-                $config['ContentDisposition'] = 'attachement'; // inline is default setting
-            }
+        if ($event->file->inline_disposition) {
+            // keep ContentDisposition because this is the default value for s3 objects
+            // therefore ensure its not provided in the config.
+        } else {
+            $config['ContentDisposition'] = 'attachement'; // inline is default setting
+        }
 
-            return $this->client->copyObject($this->extendPutObject($config));
-        });
+        return $this->client->copyObject($this->extendPutObject($config));
     }
 
     /**
