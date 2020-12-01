@@ -73,7 +73,7 @@ class S3FileSystem extends BaseFileSystemStorage
     public $endpoint;
 
     /**
-     * @var string The number of seconds provided for max-age cache control header.
+     * @var string The number of seconds provided for max-age cache control header. If false or null, no cache control header will be set.
      * @since 1.3.0
      */
     public $maxAge = 2592000;
