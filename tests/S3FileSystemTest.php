@@ -7,6 +7,7 @@ use Aws\S3\S3Client;
 use luya\aws\helpers\S3PolicyHelper;
 use luya\aws\S3FileSystem;
 use luya\testsuite\cases\WebApplicationTestCase;
+use yii\base\ErrorException;
 
 class S3FileSystemTest extends WebApplicationTestCase
 {
@@ -120,5 +121,8 @@ class S3FileSystemTest extends WebApplicationTestCase
 
         $s3->maxAge = false;
         $this->assertArrayNotHasKey('CacheControl', $s3->extendPutObject([]));
+
+        $this->expectException(ErrorException::class);
+        $s3->fileSystemSaveFile('x', 'y');
     }
 }
