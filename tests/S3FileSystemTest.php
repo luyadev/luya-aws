@@ -102,4 +102,23 @@ class S3FileSystemTest extends WebApplicationTestCase
         $this->expectException(S3Exception::class);
         $s3->updateBucketPolicy(S3PolicyHelper::S3_POLICY_PUBLIC_READ);
     }
+
+    public function testExtendPutObjectExpires()
+    {
+        $s3 = new S3FileSystem($this->app->request, [
+            'region' => 'a',
+            'bucket' => 'b',
+            'key' => 'c',
+        ]);
+
+        $this->assertArrayHasKey('CacheControl', $s3->extendPutObject([]));
+        $this->assertSame([
+            'bar' => 'foo',
+            'CacheControl' => 'max-age=2592000',
+        ], $s3->extendPutObject(['bar' => 'foo']));
+
+
+        $s3->maxAge = false;
+        $this->assertArrayNotHasKey('CacheControl', $s3->extendPutObject([]));
+    }
 }
