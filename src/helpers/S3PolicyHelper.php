@@ -4,7 +4,7 @@ namespace luya\aws\helpers;
 
 /**
  * S3 Policy Helper
- * 
+ *
  * @author Basil Suter <git@nadar.io>
  * @since 1.2.0
  */

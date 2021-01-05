@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
+
+## 1.4.0
+
++ [#9](https://github.com/luyadev/luya-aws/pull/9) AssetManager which stores the asset files into the S3 bucket.
+
 ## 1.3.0 (1. December 2020)
 
 + [#11](https://github.com/luyadev/luya-aws/issues/11) The upload object have a default max-age cache control header of 30 days, this can be turned of by setting `maxAge=false`.

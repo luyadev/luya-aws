@@ -8,6 +8,7 @@ use luya\admin\storage\BaseFileSystemStorage;
 use yii\base\InvalidConfigException;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\Transfer;
 use luya\admin\events\FileEvent;
 use luya\admin\Module;
 use luya\helpers\FileHelper;
@@ -232,6 +233,38 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
+     * Create a folder
+     *
+     * To check if a folder exists use `fileSystemExists`.
+     *
+     * @param string $folder
+     * @return boolean
+     * @since 1.4.0
+     */
+    public function folderCreate($folder)
+    {
+        return $this->client->putObject([
+            'ACL' => $this->acl,
+            'Bucket' => $this->bucket,
+            'Key' => rtrim($folder, '/') . '/',
+            'Body' => "",
+        ]);
+    }
+
+    /**
+     * Transfer folder to s3
+     *
+     * @param string $source `/path/to/source/files`
+     * @param string $dest `/` would be root but `/foo` would be root folder and then subfolder foo.
+     * @since 1.4.0
+     */
+    public function folderTransfer($source, $dest)
+    {
+        $manager = new Transfer($this->getClient(), $source, 's3://'.$this->bucket.'/'.ltrim($dest, '/'));
+        $manager->transfer();
+    }
+    
+    /**
      * @inheritdoc
      */
     public function fileAbsoluteHttpPath($fileName)
@@ -268,6 +301,37 @@ class S3FileSystem extends BaseFileSystemStorage
         return false;
     }
     
+    /**
+     * Check if a folder exists on the remote system.
+     *
+     * @see https://github.com/thephpleague/flysystem-aws-s3-v3/blob/master/src/AwsS3Adapter.php
+     * @param string $folderPath The folder path to check
+     * @return boolean
+     * @since 1.4.0
+     */
+    public function fileSystemFolderExists($folderPath)
+    {
+        // Maybe this isn't an actual key, but a prefix.
+        // Do a prefix listing of objects to determine.
+        $command = $this->client->getCommand('listObjects', [
+            'Bucket' => $this->bucket,
+            'Prefix' => rtrim($folderPath, '/') . '/',
+            'MaxKeys' => 1,
+        ]);
+
+        try {
+            $result = $this->client->execute($command);
+
+            return $result['Contents'] || $result['CommonPrefixes'];
+        } catch (S3Exception $e) {
+            if (in_array($e->getStatusCode(), [403, 404], true)) {
+                return false;
+            }
+
+            throw $e;
+        }
+    }
+
     /**
      * @inheritdoc
      */
