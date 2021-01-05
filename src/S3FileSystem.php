@@ -313,14 +313,11 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         // Maybe this isn't an actual key, but a prefix.
         // Do a prefix listing of objects to determine.
-        $command = $this->client->getCommand(
-            'listObjects',
-            [
-                'Bucket'  => $this->bucket,
-                'Prefix'  => rtrim($folderPath, '/') . '/',
-                'MaxKeys' => 1,
-            ]
-        );
+        $command = $this->client->getCommand('listObjects', [
+            'Bucket' => $this->bucket,
+            'Prefix' => rtrim($folderPath, '/') . '/',
+            'MaxKeys' => 1,
+        ]);
 
         try {
             $result = $this->client->execute($command);
