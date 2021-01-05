@@ -96,7 +96,7 @@ class AssetManager extends WebAssetManager
     public function generateBasePath()
     {
         if (!$this->_generatedBasePath) {
-            $this->_generatedBasePath = $this->basePath . DIRECTORY_SEPARATOR . Inflector::slug(Yii::$app->formatter->asDatetime(Yii::$app->packageInstaller->timestamp, 'yyyyMMddHHmmss') . '-' . Yii::$app->version) . DIRECTORY_SEPARATOR;
+            $this->_generatedBasePath = $this->basePath . DIRECTORY_SEPARATOR . Inflector::slug(Yii::$app->formatter->asDatetime(Yii::$app->packageInstaller->timestamp, 'yyyyMMddHHmmss') . '-' . Yii::$app->version);
         }
 
         return $this->_generatedBasePath;
