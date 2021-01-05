@@ -8,9 +8,9 @@ use luya\console\Command;
 
 /**
  * S3 console commands.
- * 
+ *
  * In order to use the s3 command add it to the controllerMap, for example with {{luya\Config}}:
- * 
+ *
  * ```php
  * $config->application([
  *     'controllerMap' => [
@@ -18,9 +18,9 @@ use luya\console\Command;
  *     ]
  * ])->consoleRuntime();
  * ```
- * 
+ *
  * Then its availabe with `./vendor/bin/luya s3`
- * 
+ *
  * @author Basil Suter <git@nadar.io>
  * @since 1.2.0
  */
@@ -30,7 +30,7 @@ class S3Command extends Command
 
     /**
      * Change the bucket policy.
-     * 
+     *
      * Example `s3/apply-policy s3PolicyPublicRead`
      *
      * @param string $policyName

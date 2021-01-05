@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
+## 1.3.0
+
++ [#9](https://github.com/luyadev/luya-aws/pull/9) AssetManager which stores the asset files into the S3 bucket.
+
 ## 1.2.1 (19. November 2020)
 
 + [#10](https://github.com/luyadev/luya-aws/pull/10) Fix issue where content type was not provided correctly, also ensure the disposition is set correctly when uploading or updating and object.

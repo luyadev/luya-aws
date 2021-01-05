@@ -8,18 +8,20 @@ use Yii;
 use yii\base\Component;
 
 /**
- * Usage
- * 
+ * An S3 compatible Asset Manager.
+ *
+ * Setup the AssetManager as component in your config. Of course ensure that luya aws storage is setup as storage system. See {{S3FileSystem}}.
+ *
  * ```php
  * 'assetManager' => [
  *     'class' => 'luya\aws\AssetManager',
  * ],
  * ```
- * 
- * > WOFF/FONT needs a valid cors request to be loaded from remote!
- * 
+ *
+ * > WOFF/FONT needs a valid CORS request to be loaded from a remote CDN!
+ *
  * CORS Policy:
- * 
+ *
  * ```json
  * [
  *   {
@@ -40,16 +42,18 @@ use yii\base\Component;
  *   }
  * ]
  * ```
- * 
+ *
  * Compared to the original AssetManger the following properties has no effect!
- * 
+ *
  * + hashCallback
  * + linkAssets
  * + dirMode
  * + fileMode
  * + beforeCopy
- * 
+ *
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
+ * @since 1.3.0
+ * @author Basil Suter <git@nadar.io>
  */
 class AssetManager extends WebAssetManager
 {
@@ -60,19 +64,31 @@ class AssetManager extends WebAssetManager
      *
      * @var string
      */
-    public $basePath = 'assets'; // TODO does only work by accident... https://forum.yiiframework.com/t/publish-assetmanager-files-to-cdn/130920
+    public $basePath = 'assets';
 
+    /**
+     * {@inheritDoc}
+     */
     public function init()
     {
-        $this->hashCallback = function($path) {
+        $this->hashCallback = function ($path) {
             return sprintf('%x', crc32($path . Yii::getVersion() . '|' . Yii::$app->packageInstaller->timestamp));
         };
     }
 
-    //'basePath' => './',
+    /**
+     * Override base path permission check as this check should not be done.
+     *
+     * @return void
+     */
+    public function checkBasePathPermission()
+    {
+    }
 
     /**
-     * Publish a given file with its directory 
+     * Publish a given file with its directory
+     *
+     * {@inheritDoc}
      */
     protected function publishFile($src)
     {
@@ -96,9 +112,7 @@ class AssetManager extends WebAssetManager
     /**
      * Publish a directly with all its file
      *
-     * @param [type] $src
-     * @param [type] $options
-     * @return void
+     * {@inheritDoc}
      */
     protected function publishDirectory($src, $options)
     {

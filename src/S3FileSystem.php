@@ -84,7 +84,7 @@ class S3FileSystem extends BaseFileSystemStorage
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
 
-        $this->on(self::FILE_UPDATE_EVENT, function(FileEvent $event) {
+        $this->on(self::FILE_UPDATE_EVENT, function (FileEvent $event) {
             // Copy the object in order to not upload the content again
             $config = [
                 'Bucket' => $this->bucket,
@@ -205,20 +205,21 @@ class S3FileSystem extends BaseFileSystemStorage
     
     /**
      * Create a folder
-     * 
+     *
      * To check if a folder exists use `fileSystemExists`.
      *
      * @param string $folder
      * @return boolean
+     * @since 1.3.0
      */
     public function folderCreate($folder)
     {
-        $this->client->putObject(array( 
+        return $this->client->putObject([
             'ACL' => $this->acl,
             'Bucket' => $this->bucket,
-            'Key'    => rtrim($folder, '/') . '/',
-            'Body'   => "",
-        ));
+            'Key' => rtrim($folder, '/') . '/',
+            'Body' => "",
+        ]);
     }
 
     /**
@@ -226,11 +227,11 @@ class S3FileSystem extends BaseFileSystemStorage
      *
      * @param string $source `/path/to/source/files`
      * @param string $dest `/` would be root but `/foo` would be root folder and then subfolder foo.
+     * @since 1.3.0
      */
     public function folderTransfer($source, $dest)
     {
         $manager = new Transfer($this->getClient(), $source, 's3://'.$this->bucket.'/'.ltrim($dest, '/'));
-
         $manager->transfer();
     }
     
@@ -272,11 +273,12 @@ class S3FileSystem extends BaseFileSystemStorage
     }
     
     /**
-     * Seee
-     * 
+     * Check if a folder exists on the remote system.
+     *
      * @see https://github.com/thephpleague/flysystem-aws-s3-v3/blob/master/src/AwsS3Adapter.php
-     * @param [type] $folderPath
-     * @return void
+     * @param string $folderPath The folder path to check
+     * @return boolean
+     * @since 1.3.0
      */
     public function fileSystemFolderExists($folderPath)
     {
