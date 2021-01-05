@@ -72,6 +72,12 @@ class S3FileSystem extends BaseFileSystemStorage
      * @since 1.1.0
      */
     public $endpoint;
+
+    /**
+     * @var string The number of seconds provided for max-age cache control header. If false or null, no cache control header will be set.
+     * @since 1.3.0
+     */
+    public $maxAge = 2592000;
     
     /**
      * @inheritdoc
@@ -84,25 +90,48 @@ class S3FileSystem extends BaseFileSystemStorage
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
 
-        $this->on(self::FILE_UPDATE_EVENT, function (FileEvent $event) {
-            // Copy the object in order to not upload the content again
-            $config = [
-                'Bucket' => $this->bucket,
-                'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
-                'Key' => $event->file->name_new_compound,
-                'MetadataDirective' => 'REPLACE',
-                'ContentType' => $event->file->mime_type,
-            ];
+        $this->on(self::FILE_UPDATE_EVENT, [$this, 'fileUpdateEvent']);
+    }
+    
+    /**
+     * Update/Replace the online file
+     *
+     * @param FileEvent $event
+     */
+    public function fileUpdateEvent(FileEvent $event)
+    {
+        // Copy the object in order to not upload the content again
+        $config = [
+            'Bucket' => $this->bucket,
+            'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
+            'Key' => $event->file->name_new_compound,
+            'MetadataDirective' => 'REPLACE',
+            'ContentType' => $event->file->mime_type,
+        ];
 
-            if ($event->file->inline_disposition) {
-                // keep ContentDisposition because this is the default value for s3 objects
-                // therefore ensure its not provided in the config.
-            } else {
-                $config['ContentDisposition'] = 'attachement'; // inline is default setting
-            }
+        if ($event->file->inline_disposition) {
+            // keep ContentDisposition because this is the default value for s3 objects
+            // therefore ensure its not provided in the config.
+        } else {
+            $config['ContentDisposition'] = 'attachement'; // inline is default setting
+        }
 
-            return $this->client->copyObject($config);
-        });
+        return $this->client->copyObject($this->extendPutObject($config));
+    }
+
+    /**
+     * Extend the a given put object config with cache information.
+     *
+     * @param array $config The array to extend
+     * @return array Returns the array with the new Expires option if not disabled.
+     */
+    public function extendPutObject(array $config)
+    {
+        if ($this->maxAge) {
+            $config['CacheControl'] = 'max-age=' . $this->maxAge;
+        }
+
+        return $config;
     }
     
     private $_client;
@@ -332,7 +361,7 @@ class S3FileSystem extends BaseFileSystemStorage
         }
         
         // see https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#putobject
-        return $this->client->putObject($config);
+        return $this->client->putObject($this->extendPutObject($config));
     }
     
     /**
