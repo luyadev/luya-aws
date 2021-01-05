@@ -52,6 +52,9 @@ use yii\base\Component;
  * + fileMode
  * + beforeCopy
  *
+ * @property string $versionPath The version path which should be used between builds. By defaults its a combination of 
+ * the vendor timestamp and the Yii::$app->version.
+ *  
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  * @since 1.4.0
  * @author Basil Suter <git@nadar.io>
@@ -73,8 +76,46 @@ class AssetManager extends WebAssetManager
     public function init()
     {
         $this->hashCallback = function ($path) {
-            return sprintf('%x', crc32($path . Yii::getVersion()));
+            return sprintf('%x', crc32($path));
         };
+    }
+
+    private $_versionPath;
+
+    /**
+     * Setter method of the path name
+     * 
+     * An example using only the app version would be:
+     * 
+     * ```php
+     * 'versionPath' => function() {
+     *    return Yii::$app->version;
+     * }
+     * ```
+     * 
+     * @param string|callable $path
+     */
+    public function setVersionPath($path)
+    {
+        if (is_callable($path)) {
+            $path = call_user_func($path);
+        }
+
+        $this->_versionPath = $path;
+    }
+
+    /**
+     * Getter method for versionPath
+     *
+     * @return string
+     */
+    public function getVersionPath()
+    {
+        if ($this->_versionPath === null) {
+            $this->_versionPath = Inflector::slug(Yii::$app->formatter->asDatetime(Yii::$app->packageInstaller->timestamp, 'yyyyMMddHHmmss') . '-' . Yii::$app->version);
+        }
+
+        return $this->_versionPath;
     }
 
     /**
@@ -86,22 +127,6 @@ class AssetManager extends WebAssetManager
     {
     }
 
-    private $_generatedBasePath;
-
-    /**
-     * Generate the base path including the version and timestamp of the vendor
-     *
-     * @return string
-     */
-    public function generateBasePath()
-    {
-        if (!$this->_generatedBasePath) {
-            $this->_generatedBasePath = $this->basePath . DIRECTORY_SEPARATOR . Inflector::slug(Yii::$app->formatter->asDatetime(Yii::$app->packageInstaller->timestamp, 'yyyyMMddHHmmss') . '-' . Yii::$app->version);
-        }
-
-        return $this->_generatedBasePath;
-    }
-
     /**
      * Publish a given file with its directory
      *
@@ -111,7 +136,7 @@ class AssetManager extends WebAssetManager
     {
         $dir = $this->hash($src);
         $fileName = basename($src);
-        $dstDir = $this->generateBasePath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
+        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
         $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName; // assets/<hash>/jquery.js
 
         if ($cached = $this->isCached($this->forceCopy, $dstFile)) {
@@ -134,7 +159,7 @@ class AssetManager extends WebAssetManager
     protected function publishDirectory($src, $options)
     {
         $dir = $this->hash($src);
-        $dstDir = $this->generateBasePath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
+        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
 
         $forceCopy = $this->forceCopy || (isset($options['forceCopy']) && $options['forceCopy']);
 

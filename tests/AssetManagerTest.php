@@ -43,6 +43,12 @@ class AssetManagerTest extends WebApplicationTestCase
     {
         $manager = new AssetManager();
         Yii::$app->packageInstaller->setTimestamp(strtotime('10 September 2000'));
-        $this->assertSame('assets/20000910000000-10', $manager->generateBasePath());
+        $this->assertSame('20000910000000-10', $manager->versionPath);
+
+        $manager->versionPath = function() {
+            return '1.0';
+        };
+
+        $this->assertSame('1.0',$manager->versionPath);
     }
 }
