@@ -2,6 +2,7 @@
 
 namespace luya\aws;
 
+use luya\helpers\Inflector;
 use luya\traits\CacheableTrait;
 use luya\web\AssetManager as WebAssetManager;
 use Yii;
@@ -72,7 +73,7 @@ class AssetManager extends WebAssetManager
     public function init()
     {
         $this->hashCallback = function ($path) {
-            return sprintf('%x', crc32($path . Yii::getVersion() . '|' . Yii::$app->packageInstaller->timestamp));
+            return sprintf('%x', crc32($path . Yii::getVersion()));
         };
     }
 
@@ -85,6 +86,22 @@ class AssetManager extends WebAssetManager
     {
     }
 
+    private $_generatedBasePath;
+
+    /**
+     * Generate the base path including the version and timestamp of the vendor
+     *
+     * @return string
+     */
+    public function generateBasePath()
+    {
+        if (!$this->_generatedBasePath) {
+            $this->_generatedBasePath = $this->basePath . DIRECTORY_SEPARATOR . Inflector::slug(Yii::$app->formatter->asDatetime(Yii::$app->packageInstaller->timestamp, 'yyyyMMddHHmmss') . '-' . Yii::$app->version) . DIRECTORY_SEPARATOR;
+        }
+
+        return $this->_generatedBasePath;
+    }
+
     /**
      * Publish a given file with its directory
      *
@@ -94,7 +111,7 @@ class AssetManager extends WebAssetManager
     {
         $dir = $this->hash($src);
         $fileName = basename($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
+        $dstDir = $this->generateBasePath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
         $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName; // assets/<hash>/jquery.js
 
         if ($cached = $this->isCached($this->forceCopy, $dstFile)) {
@@ -117,7 +134,7 @@ class AssetManager extends WebAssetManager
     protected function publishDirectory($src, $options)
     {
         $dir = $this->hash($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
+        $dstDir = $this->generateBasePath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
 
         $forceCopy = $this->forceCopy || (isset($options['forceCopy']) && $options['forceCopy']);
 
