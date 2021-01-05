@@ -52,7 +52,7 @@ use yii\base\Component;
  * + beforeCopy
  *
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
- * @since 1.3.0
+ * @since 1.4.0
  * @author Basil Suter <git@nadar.io>
  */
 class AssetManager extends WebAssetManager

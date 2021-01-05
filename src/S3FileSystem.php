@@ -239,7 +239,7 @@ class S3FileSystem extends BaseFileSystemStorage
      *
      * @param string $folder
      * @return boolean
-     * @since 1.3.0
+     * @since 1.4.0
      */
     public function folderCreate($folder)
     {
@@ -256,7 +256,7 @@ class S3FileSystem extends BaseFileSystemStorage
      *
      * @param string $source `/path/to/source/files`
      * @param string $dest `/` would be root but `/foo` would be root folder and then subfolder foo.
-     * @since 1.3.0
+     * @since 1.4.0
      */
     public function folderTransfer($source, $dest)
     {
@@ -307,7 +307,7 @@ class S3FileSystem extends BaseFileSystemStorage
      * @see https://github.com/thephpleague/flysystem-aws-s3-v3/blob/master/src/AwsS3Adapter.php
      * @param string $folderPath The folder path to check
      * @return boolean
-     * @since 1.3.0
+     * @since 1.4.0
      */
     public function fileSystemFolderExists($folderPath)
     {
