@@ -9,7 +9,14 @@ use Yii;
 
 /**
  * An S3 compatible Asset Manager.
+ * 
+ * Saves all the files in the s3 system and serves them from the CDN url. Uploading is done once, afterwards urls are served from the cache
+ * which makes it fast and no disk io is required!
  *
+ * > Using this AssetManager requires you to correctly adjust the app version for each deployment or building the app with a CI system
+ * > which runns composer install before each deployment (building of the docker images). It also requires an enabled cache system otherwise
+ * > this implementation is rather slow compared to the original AssetManager.
+ * 
  * By default, an asset folder and its version folder will be created when receiving the first web request. The version folder is based
  * on the composer.lock file timestamp (Yii::$app->packageInstaller->timestamp) and the application version (Yii::$app->version). Afterwarts
  * the path to the uploaded asset file will be stored in the cache, it is therfore required to have caching enabled. When you scale with multiple
@@ -57,7 +64,8 @@ use Yii;
  * + beforeCopy
  *
  * @property string $versionPath The version path which should be used between builds. By defaults its a combination of 
- * the vendor timestamp and the Yii::$app->version. The versionPath will be append as folder 
+ * the vendor timestamp and the Yii::$app->version. The versionPath will be append as folder like `assets/<VERSION_PATH>/1hf3ufh`.
+ * Where `assets` is taken from the $basePath property.
  *  
  * @see Inspiration taken from https://gitlab.com/mikk150/yii2-asset-manager-flysystem
  * @since 1.4.0
