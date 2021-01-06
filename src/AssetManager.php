@@ -148,8 +148,8 @@ class AssetManager extends WebAssetManager
     {
         $dir = $this->hash($src);
         $fileName = basename($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
-        $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName; // assets/<hash>/jquery.js
+        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<versionpath>/<hash>
+        $dstFile = $dstDir . DIRECTORY_SEPARATOR . $fileName; // assets/<versionpath>/<hash>/jquery.js
 
         if ($cached = $this->isCached($this->forceCopy, $dstFile)) {
             return $cached;
@@ -171,7 +171,7 @@ class AssetManager extends WebAssetManager
     protected function publishDirectory($src, $options)
     {
         $dir = $this->hash($src);
-        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<hash>
+        $dstDir = $this->basePath . DIRECTORY_SEPARATOR . $this->getVersionPath() . DIRECTORY_SEPARATOR . $dir; // assets/<versionpath>/<hash>
 
         $forceCopy = $this->forceCopy || (isset($options['forceCopy']) && $options['forceCopy']);
 
