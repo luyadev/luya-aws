@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
 
-## 1.4.0 (6. January 2020)
+## 1.4.0 (7. January 2020)
 
 + [#9](https://github.com/luyadev/luya-aws/pull/9) AssetManager which stores the asset files into the S3 bucket.
 
