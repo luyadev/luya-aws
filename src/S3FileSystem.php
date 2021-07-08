@@ -145,6 +145,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         if ($this->_client === null) {
             $this->_client = new S3Client($this->getS3Config());
+            $this->_client->registerStreamWrapper();
         }
         
         return $this->_client;
@@ -299,6 +300,14 @@ class S3FileSystem extends BaseFileSystemStorage
         }
         
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function fileSystemStream($fileName)
+    {
+        return fopen("s3://{$this->bucket}/{$fileName}", "r");
     }
     
     /**
