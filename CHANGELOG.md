@@ -3,8 +3,11 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
+## 1.5.0 (8. Julay 2021)
 
-## 1.4.0 (7. January 2020)
++ [#15](https://github.com/luyadev/luya-aws/pull/15) Added new method to read files as stream in order to support LUYA admin 4.0
+
+## 1.4.0 (7. January 2021)
 
 + [#9](https://github.com/luyadev/luya-aws/pull/9) AssetManager which stores the asset files into the S3 bucket.
 
