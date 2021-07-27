@@ -6,8 +6,8 @@
         "aws/aws-sdk-php": "^3.0"
     },
     "require-dev": {
-        "luyadev/luya-testsuite": "^1.0",
-        "luyadev/luya-module-admin": "^1.0|^2.0|^3.0"
+        "luyadev/luya-testsuite": "^2.0",
+        "luyadev/luya-module-admin": "^1.0|^2.0|^3.0|^4.0"
     },
     "autoload": {
         "psr-4" : {
@@ -25,6 +25,17 @@
         {
             "name": "Basil Suter",
             "email": "git@nadar.io"
+        }
+    ],
+    "config": {
+        "fxp-asset": {
+            "enabled": false
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
         }
     ]
 }
