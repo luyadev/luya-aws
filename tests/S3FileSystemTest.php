@@ -95,8 +95,8 @@ class S3FileSystemTest extends WebApplicationTestCase
             'endpoint' => 'https://localhost:9000',
         ]);
 
-        $this->assertContains('foobar.txt?', $s3->presignedUrl('foobar.txt', '10 min'));
-        $this->assertContains('/bucket/foobar.txt', $s3->fileHttpPath('foobar.txt'));
+        $this->assertStringContainsString('foobar.txt?', $s3->presignedUrl('foobar.txt', '10 min'));
+        $this->assertStringContainsString('/bucket/foobar.txt', $s3->fileHttpPath('foobar.txt'));
     }
 
     public function testUpdateBucket()
