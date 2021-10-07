@@ -27,6 +27,7 @@ After installation via Composer include the storage component to your configurat
 
 ```php
 'components' => [
+    //...
     'storage' => [
         'class' => 'luya\aws\S3FileSystem',
         'bucket' => 'BUCKET_NAME',
