@@ -10,7 +10,7 @@ namespace luya\aws\helpers;
  */
 class S3PolicyHelper
 {
-    const S3_POLICY_PUBLIC_READ = 's3PolicyPublicRead';
+    public const S3_POLICY_PUBLIC_READ = 's3PolicyPublicRead';
 
     public static $policies = [
       self::S3_POLICY_PUBLIC_READ => '{

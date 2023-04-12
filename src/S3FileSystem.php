@@ -3,16 +3,16 @@
 namespace luya\aws;
 
 use Aws\Result;
-use Yii;
-use luya\admin\storage\BaseFileSystemStorage;
-use yii\base\InvalidConfigException;
-use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 use Aws\S3\Transfer;
 use luya\admin\events\FileEvent;
 use luya\admin\Module;
+use luya\admin\storage\BaseFileSystemStorage;
 use luya\helpers\FileHelper;
 use luya\helpers\StringHelper;
+use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * Amazon S3 Bucket Filesystem.
@@ -40,22 +40,22 @@ class S3FileSystem extends BaseFileSystemStorage
      * @var string Contains the name of the bucket defined on amazon webservice.
      */
     public $bucket;
-    
+
     /**
      * @var string The authentiication key in order to connect to the s3 bucket.
      */
     public $key;
-    
+
     /**
      * @var string The authentification secret in order to connect to the s3 bucket.
      */
     public $secret;
-    
+
     /**
      * @var string Regions overview: https://docs.aws.amazon.com/general/latest/gr/rande.html
      */
     public $region;
-    
+
     /**
      * @var string The ACL default permission when writing new files. All available options are `private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control`
      */
@@ -78,21 +78,21 @@ class S3FileSystem extends BaseFileSystemStorage
      * @since 1.3.0
      */
     public $maxAge = 2592000;
-    
+
     /**
      * @inheritdoc
      */
     public function init()
     {
         parent::init();
-        
+
         if ($this->region === null || $this->bucket === null || $this->key === null) {
             throw new InvalidConfigException("region, bucket and key must be provided for s3 component configuration.");
         }
 
         $this->on(self::FILE_UPDATE_EVENT, [$this, 'fileUpdateEvent']);
     }
-    
+
     /**
      * Update/Replace the online file
      *
@@ -102,6 +102,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         // Copy the object in order to not upload the content again
         $config = [
+            'ACL' => $this->acl,
             'Bucket' => $this->bucket,
             'CopySource' => "{$this->bucket}/{$event->file->name_new_compound}",
             'Key' => $event->file->name_new_compound,
@@ -133,9 +134,9 @@ class S3FileSystem extends BaseFileSystemStorage
 
         return $config;
     }
-    
+
     private $_client;
-    
+
     /**
      * Get the Amazon client library.
      *
@@ -147,7 +148,7 @@ class S3FileSystem extends BaseFileSystemStorage
             $this->_client = new S3Client($this->getS3Config());
             $this->_client->registerStreamWrapper();
         }
-        
+
         return $this->_client;
     }
 
@@ -178,9 +179,9 @@ class S3FileSystem extends BaseFileSystemStorage
 
         return $config;
     }
-    
+
     private $_httpPaths = [];
-    
+
     /**
      * @inheritdoc
      */
@@ -190,10 +191,10 @@ class S3FileSystem extends BaseFileSystemStorage
             Yii::debug('Get S3 object url: ' . $fileName, __METHOD__);
             $this->_httpPaths[$fileName] = $this->getClient()->getObjectUrl($this->bucket, $fileName);
         }
-        
+
         return $this->_httpPaths[$fileName];
     }
-    
+
     /**
      * Generate a presigned download url for a private object f.e
      *
@@ -232,7 +233,7 @@ class S3FileSystem extends BaseFileSystemStorage
             'Policy' => StringHelper::template($policy, ['bucket' => $this->bucket]),
         ]);
     }
-    
+
     /**
      * Create a folder
      *
@@ -264,7 +265,7 @@ class S3FileSystem extends BaseFileSystemStorage
         $manager = new Transfer($this->getClient(), $source, 's3://'.$this->bucket.'/'.ltrim($dest, '/'));
         $manager->transfer();
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -272,7 +273,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return $this->fileHttpPath($fileName);
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -280,7 +281,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return $this->fileHttpPath($fileName);
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -291,14 +292,14 @@ class S3FileSystem extends BaseFileSystemStorage
                 'Bucket' => $this->bucket,
                 'Key' => $fileName,
             ]);
-            
+
             if ($object) {
                 return $object['Body'];
             }
         } catch (S3Exception $e) {
             return false;
         }
-        
+
         return false;
     }
 
@@ -309,7 +310,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return fopen("s3://{$this->bucket}/{$fileName}", "r");
     }
-    
+
     /**
      * Check if a folder exists on the remote system.
      *
@@ -348,7 +349,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return $this->client->doesObjectExist($this->bucket, $fileName);
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -365,11 +366,11 @@ class S3FileSystem extends BaseFileSystemStorage
         if (!Module::getInstance()->fileDefaultInlineDisposition) {
             $config['ContentDisposition'] = 'attachement'; // inline is default setting
         }
-        
+
         // see https://docs.aws.amazon.com/aws-sdk-php/v3/api/api-s3-2006-03-01.html#putobject
         return $this->client->putObject($this->extendPutObject($config));
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -377,7 +378,7 @@ class S3FileSystem extends BaseFileSystemStorage
     {
         return $this->fileSystemSaveFile($newSource, $fileName);
     }
-    
+
     /**
      * @inheritdoc
      */

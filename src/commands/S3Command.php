@@ -3,8 +3,8 @@
 namespace luya\aws\commands;
 
 use luya\aws\helpers\S3PolicyHelper;
-use Yii;
 use luya\console\Command;
+use Yii;
 
 /**
  * S3 console commands.

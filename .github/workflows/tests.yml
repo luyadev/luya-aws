@@ -6,6 +6,48 @@ env:
   DEFAULT_COMPOSER_FLAGS: "--prefer-dist --no-interaction"
   CC_TEST_REPORTER_ID: 57ac1d0d520966800d8fd7c60d421bdd17397337c5519de9913e41c44a906ee5
 jobs:
+
+  ## PHPSTAN
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@2.21.0
+        with:
+          php-version: '8.0'
+          extensions: mbstring, intl
+          coverage: none
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          update: true
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: PHPStan tests
+        run: composer phpstan
+
+  # PHPCSFIXER
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Install
+          run: composer install
+
+        - name: Run php-cs-fixer
+          run: composer phpcsfixer
+
+        - uses: stefanzweifel/git-auto-commit-action@v4
+          with:
+              commit_message: Apply php-cs-fixer changes
+
+  ## PHPUNIT
   phpunit:
     name: PHP ${{ matrix.php }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -13,7 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php: ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1']
+        php: ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
 
     steps:
       ## checkout the repoistory 
@@ -35,7 +77,7 @@ jobs:
       ## run unit tests
       - name: PHP Unit tests for PHP 
         run: vendor/bin/phpunit --verbose --configuration actions.phpunit.xml
-        if: matrix.php == '8.1' || matrix.php == '8.0' || matrix.php == '7.4' || matrix.php == '7.3' || matrix.php == '7.2' || matrix.php == '7.0'
+        if: matrix.php == '8.2' || matrix.php == '8.1' || matrix.php == '8.0' || matrix.php == '7.4' || matrix.php == '7.3' || matrix.php == '7.2' || matrix.php == '7.0'
 
       ## unit test with coverage
       - name: PHP Unit tests for PHP 7.1

@@ -3,21 +3,22 @@
     "description": "LUYA Amazon Webservice LUYA components.",
     "type": "luya-extension",
     "require": {
-        "aws/aws-sdk-php": "^3.0"
+        "aws/aws-sdk-php": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.15",
+        "phpstan/phpstan": "^1.10"
     },
     "require-dev": {
         "luyadev/luya-testsuite": "^2.0",
         "luyadev/luya-module-admin": "^1.0|^2.0|^3.0|^4.0"
     },
     "autoload": {
-        "psr-4" : {
-            "luya\\aws\\" : "src/"
-            
+        "psr-4": {
+            "luya\\aws\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "luya\\aws\\tests\\" : "tests/"
+            "luya\\aws\\tests\\": "tests/"
         }
     },
     "license": "MIT",
@@ -37,5 +38,9 @@
             "type": "composer",
             "url": "https://asset-packagist.org"
         }
-    ]
+    ],
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan -v",
+        "phpcsfixer": "vendor/bin/php-cs-fixer fix"
+    }
 }
