@@ -5,9 +5,10 @@ In order to read more about upgrading and BC breaks have a look at the [UPGRADE 
 
 ## 1.5.0 (12. April 2023)
 
-+ Removed Active Testing from PHP 7.0 to 7.3
++ **Removed Testing for PHP 7.0, 7.1, 7.2 and 7.3**
 + Added PHP 8.2 Testing
 + Added Phpstan
++ Fixed bug with ACL when put Object
 + [#18](https://github.com/luyadev/luya-aws/pull/18) Added PHP 8.1 Testing
 
 ## 1.5.0 (27. July 2021)
