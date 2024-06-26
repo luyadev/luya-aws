@@ -81,6 +81,12 @@ class S3FileSystem extends BaseFileSystemStorage
     public $maxAge = 2592000;
 
     /**
+     * If defined, the endpoint and bucket name will be removed from the url and replaced with this value. This is can be helpful if migrating from an existing s3 url to another.
+     * @since 1.7.0
+     */
+    public $readableProxyUrl;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -191,8 +197,16 @@ class S3FileSystem extends BaseFileSystemStorage
     public function fileHttpPath($fileName)
     {
         if (!isset($this->_httpPaths[$fileName])) {
-            Yii::debug('Get S3 object url: ' . $fileName, __METHOD__);
-            $this->_httpPaths[$fileName] = $this->getClient()->getObjectUrl($this->bucket, $fileName);
+
+            $r = $this->getClient()->getObjectUrl($this->bucket, $fileName);
+
+            Yii::debug(['s3 request file: ' . $fileName, 's3 response: ' . $r], __METHOD__);
+
+            if ($this->readableProxyUrl) {
+                $r = str_replace(["$this->endpoint/$this->bucket"], [$this->readableProxyUrl], $r);
+            }
+
+            $this->_httpPaths[$fileName] = $r;
         }
 
         return $this->_httpPaths[$fileName];
