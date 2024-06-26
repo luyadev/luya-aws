@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 In order to read more about upgrading and BC breaks have a look at the [UPGRADE Document](UPGRADE.md).
 
+## 1.7.0
+
++ allow the `acl` param to be null, since certain storage system throw an error if an unsupported header value is provided.
+
 ## 1.6.0 (12. April 2023)
 
 + **Removed Testing for PHP 7.0, 7.1, 7.2 and 7.3**

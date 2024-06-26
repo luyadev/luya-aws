@@ -57,7 +57,8 @@ class S3FileSystem extends BaseFileSystemStorage
     public $region;
 
     /**
-     * @var string The ACL default permission when writing new files. All available options are `private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control`
+     * @var string The ACL default permission when writing new files. All available options are `private|public-read|public-read-write|authenticated-read|aws-exec-read|bucket-owner-read|bucket-owner-full-control` if null, this header
+     * will be ignored.
      */
     public $acl = 'public-read';
 
@@ -132,7 +133,9 @@ class S3FileSystem extends BaseFileSystemStorage
             $config['CacheControl'] = 'max-age=' . $this->maxAge;
         }
 
-        return $config;
+        // remove null values from the config,
+        // this is mainly usfull if acl is set to null.
+        return array_filter($config);
     }
 
     private $_client;
@@ -245,12 +248,12 @@ class S3FileSystem extends BaseFileSystemStorage
      */
     public function folderCreate($folder)
     {
-        return $this->client->putObject([
+        return $this->client->putObject(array_filter([
             'ACL' => $this->acl,
             'Bucket' => $this->bucket,
             'Key' => rtrim($folder, '/') . '/',
             'Body' => "",
-        ]);
+        ]));
     }
 
     /**
