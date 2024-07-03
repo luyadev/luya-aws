@@ -5,8 +5,8 @@ In order to read more about upgrading and BC breaks have a look at the [UPGRADE 
 
 ## 1.7.0 (3. July 2024)
 
-+ Allow the `acl` param to be null, since certain storage system throw an error if an unsupported header value is provided.
-+ Added new `$readableProxyUrl` property.
++ The `acl` parameter can now be set to `null`. This update addresses issues where certain storage systems would throw errors if an unsupported header value was provided.
++ **Added**: Introduced a new `$readableProxyUrl` property to improve the management and readability of proxy URLs.
 
 ## 1.6.0 (12. April 2023)
 
